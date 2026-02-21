@@ -89,12 +89,13 @@ GET /api/prayer-times?lat=52.6369&lng=-1.1398&date=2026-02-21
 
 ## Calculation Method
 
-- **Fajr**: 18° below horizon
-- **Zuhr**: Solar noon (Dhuhr)
-- **Asr**: Standard (Shafi) method
-- **Maghrib**: Sunset
-- **Isha**: 18° below horizon
+- **Fajr**: 18° below horizon (with UK seasonal adjustment)
+- **Zuhr**: Solar noon + 5 min adjustment
+- **Asr**: Hanafi method (shadow = 2× object height)
+- **Maghrib**: Sunset + 3 min adjustment
+- **Isha**: 18° below horizon (with UK seasonal adjustment)
 - **Timezone**: Europe/London (BST/GMT auto-handled)
+- **High latitude**: UK Moonsighting Committee seasonal twilight algorithm
 
 ---
 
