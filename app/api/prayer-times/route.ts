@@ -6,7 +6,7 @@ import type { APIResponse, APIErrorResponse } from "@/lib/types";
 import type { PrayerTimes } from "@/lib/prayerCalculator";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const CALCULATION_METHOD = "UK Moonsighting Committee (Fajr 18°, Isha 18°, Hanafi Asr)";
+const CALCULATION_METHOD = "UK Standard (Fajr 18°, Isha 18°, Hanafi Asr, Dhuhr +5min, Maghrib +3min)";
 const TIMEZONE = "Europe/London";
 
 function getTodayInLondon(): string {
