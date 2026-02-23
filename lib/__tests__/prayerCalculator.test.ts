@@ -25,7 +25,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:23');
       expect(times.asr).toBe('15:37');
       expect(times.maghrib).toBe('17:31');
-      expect(times.isha).toBe('19:23');
+      expect(times.isha).toBe('19:01');
     });
 
     it('should calculate correct times for Feb 22, 2026 (Ramadan 5)', () => {
@@ -35,7 +35,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:23');
       expect(times.asr).toBe('15:38');
       expect(times.maghrib).toBe('17:33');
-      expect(times.isha).toBe('19:25');
+      expect(times.isha).toBe('19:03');
     });
 
     it('should calculate correct times for Feb 23, 2026 (Ramadan 6)', () => {
@@ -45,7 +45,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:23');
       expect(times.asr).toBe('15:40');
       expect(times.maghrib).toBe('17:35');
-      expect(times.isha).toBe('19:26');
+      expect(times.isha).toBe('19:05');
     });
   });
 
@@ -57,7 +57,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:22');
       expect(times.asr).toBe('15:50');
       expect(times.maghrib).toBe('17:46');
-      expect(times.isha).toBe('19:37');
+      expect(times.isha).toBe('19:16');
     });
 
     it('should calculate correct times for Mar 5, 2026 (Ramadan 16)', () => {

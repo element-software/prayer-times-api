@@ -163,14 +163,21 @@ export default function Home() {
           )}
         </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-slate-500 text-xs">
-            API:{" "}
-            <code className="text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
-              GET /api/prayer-times?city=Leicester&amp;date=2026-02-21
-            </code>
-          </p>
-        </div>
+        {result && (
+          <div className="mt-6 text-center">
+            <p className="text-slate-500 text-xs">
+              API:{" "}
+              <a
+                href={`/api/prayer-times?city=${encodeURIComponent(city)}&date=${result.date}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-400 hover:text-emerald-300 underline break-all"
+              >
+                GET /api/prayer-times?city={encodeURIComponent(city)}&amp;date={result.date}
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </main>
   );
