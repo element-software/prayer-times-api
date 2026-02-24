@@ -16,6 +16,7 @@ export interface PrayerTimesTableProps {
 
 const COLUMNS = [
   { key: "fajr" as const, label: "Fajr" },
+  { key: "sunrise" as const, label: "Sunrise" },
   { key: "zuhr" as const, label: "Zuhr" },
   { key: "asr" as const, label: "Asr" },
   { key: "maghrib" as const, label: "Maghrib" },

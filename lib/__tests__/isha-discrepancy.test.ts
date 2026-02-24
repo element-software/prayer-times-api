@@ -14,6 +14,7 @@ describe('Madani baseline (24 Feb 2026)', () => {
   it('matches Madani timetable for 24 Feb 2026 (Ramadan Day 7)', () => {
     const times = calculatePrayerTimes(LEICESTER_LAT, LEICESTER_LNG, '2026-02-24');
     expect(times.fajr).toBe('05:08');
+    expect(times.sunrise).toBe('07:02');
     expect(times.zuhr).toBe('12:23');
     expect(times.asr).toBe('15:42');
     expect(times.maghrib).toBe('17:37');

@@ -8,6 +8,7 @@ import {
 
 export interface PrayerTimes {
   fajr: string;
+  sunrise: string;
   zuhr: string;
   asr: string;
   maghrib: string;
@@ -52,6 +53,7 @@ export function calculatePrayerTimes(
 
   return {
     fajr: formatTime(prayerTimes.fajr),
+    sunrise: formatTime(prayerTimes.sunrise),
     zuhr: formatTime(prayerTimes.dhuhr),
     asr: formatTime(prayerTimes.asr),
     maghrib: formatTime(prayerTimes.maghrib),

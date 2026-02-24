@@ -118,6 +118,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       
       // Verify all times match HH:MM format
       expect(times.fajr).toMatch(/^\d{2}:\d{2}$/);
+      expect(times.sunrise).toMatch(/^\d{2}:\d{2}$/);
       expect(times.zuhr).toMatch(/^\d{2}:\d{2}$/);
       expect(times.asr).toMatch(/^\d{2}:\d{2}$/);
       expect(times.maghrib).toMatch(/^\d{2}:\d{2}$/);
@@ -133,12 +134,14 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       };
       
       const fajrMins = timeToMinutes(times.fajr);
+      const sunriseMins = timeToMinutes(times.sunrise);
       const zuhrMins = timeToMinutes(times.zuhr);
       const asrMins = timeToMinutes(times.asr);
       const maghribMins = timeToMinutes(times.maghrib);
       const ishaMins = timeToMinutes(times.isha);
       
-      expect(fajrMins).toBeLessThan(zuhrMins);
+      expect(fajrMins).toBeLessThan(sunriseMins);
+      expect(sunriseMins).toBeLessThan(zuhrMins);
       expect(zuhrMins).toBeLessThan(asrMins);
       expect(asrMins).toBeLessThan(maghribMins);
       expect(maghribMins).toBeLessThan(ishaMins);
