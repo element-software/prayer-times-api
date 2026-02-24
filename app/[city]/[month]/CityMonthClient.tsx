@@ -26,12 +26,14 @@ interface CityMonthClientProps {
   data: APIMonthResponse;
   citySlug: string;
   monthSlugParam: string;
+  todayStr: string;
 }
 
 export function CityMonthClient({
   data,
   citySlug,
   monthSlugParam,
+  todayStr,
 }: CityMonthClientProps) {
   const router = useRouter();
   const [year, month] = monthSlugParam.split("-").map(Number);
@@ -133,7 +135,11 @@ export function CityMonthClient({
                 {data.times.map(({ date: dateStr, prayer_times }) => (
                   <tr
                     key={dateStr}
-                    className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                    className={`border-b border-white/5 transition-colors ${
+                      dateStr === todayStr
+                        ? "bg-emerald-500/20 border-l-4 border-l-emerald-500"
+                        : "hover:bg-white/5"
+                    }`}
                   >
                     <td className="px-4 py-2 text-slate-400">{formatDayOfWeek(dateStr)}</td>
                     <td className="px-4 py-2 text-white font-medium">{formatDayNum(dateStr)}</td>
