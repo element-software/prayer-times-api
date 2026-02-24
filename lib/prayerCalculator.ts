@@ -15,7 +15,6 @@ export interface PrayerTimes {
 }
 
 const TIMEZONE = "Europe/London";
-const ISHA_MAX_MINUTES_AFTER_MAGHRIB = 90;
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString("en-GB", {
@@ -24,24 +23,6 @@ function formatTime(date: Date): string {
     hour12: false,
     timeZone: TIMEZONE,
   });
-}
-
-function timeToMinutesSinceMidnight(date: Date): number {
-  const s = date.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-    timeZone: TIMEZONE,
-  });
-  const [h, m] = s.split(":").map(Number);
-  return h * 60 + m;
-}
-
-function minutesSinceMidnightToTime(mins: number): string {
-  const h = Math.floor(mins / 60) % 24;
-  const m = mins % 60;
-  return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
 }
 
 export function calculatePrayerTimes(
@@ -69,20 +50,11 @@ export function calculatePrayerTimes(
 
   const prayerTimes = new AdhanPrayerTimes(coordinates, date, params);
 
-  // Cap Isha at Maghrib + 90 min when 18° would be later (UK mosque practice)
-  const maghribMins = timeToMinutesSinceMidnight(prayerTimes.maghrib);
-  const calculatedIshaMins = timeToMinutesSinceMidnight(prayerTimes.isha);
-  const cappedIshaMins = maghribMins + ISHA_MAX_MINUTES_AFTER_MAGHRIB;
-  const ishaFormatted =
-    calculatedIshaMins <= cappedIshaMins
-      ? formatTime(prayerTimes.isha)
-      : minutesSinceMidnightToTime(cappedIshaMins);
-
   return {
     fajr: formatTime(prayerTimes.fajr),
     zuhr: formatTime(prayerTimes.dhuhr),
     asr: formatTime(prayerTimes.asr),
     maghrib: formatTime(prayerTimes.maghrib),
-    isha: ishaFormatted,
+    isha: formatTime(prayerTimes.isha),
   };
 }

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCityByName } from "@/lib/cities";
 import { calculatePrayerTimes } from "@/lib/prayerCalculator";
-import { getCached, setCached, buildCacheKey } from "@/lib/cache";
 import type { APIResponse, APIErrorResponse } from "@/lib/types";
 import type { PrayerTimes } from "@/lib/prayerCalculator";
 
@@ -82,13 +81,7 @@ export async function GET(
     );
   }
 
-  const cacheKey = buildCacheKey(latitude, longitude, dateStr);
-  const cached = getCached<PrayerTimes>(cacheKey);
-  const prayerTimes = cached ?? calculatePrayerTimes(latitude, longitude, dateStr);
-
-  if (!cached) {
-    setCached(cacheKey, prayerTimes);
-  }
+  const prayerTimes = calculatePrayerTimes(latitude, longitude, dateStr);
 
   const response: APIResponse = {
     location: {
@@ -105,7 +98,7 @@ export async function GET(
   return NextResponse.json(response, {
     status: 200,
     headers: {
-      "Cache-Control": "public, max-age=3600",
+      "Cache-Control": "no-store",
     },
   });
 }

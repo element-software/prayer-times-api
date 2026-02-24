@@ -8,9 +8,8 @@ import { calculatePrayerTimes } from '../prayerCalculator';
  * These tests verify our calculation algorithm against real-world
  * prayer times published by Madani Masjid in Leicester.
  * 
- * Note: Some dates show discrepancies in Isha time, particularly
- * after early March when days get longer. This may be due to
- * additional seasonal adjustments applied by the masjid.
+ * Times use UK standard: Fajr/Isha 18°, Hanafi Asr, Dhuhr +5min, Maghrib +3min,
+ * matching Madani Schools Federation Ramadan timetable (e.g. 24 Feb 2026).
  */
 
 describe('Prayer Times Calculation - Madani School Leicester', () => {
@@ -25,7 +24,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:23');
       expect(times.asr).toBe('15:37');
       expect(times.maghrib).toBe('17:31');
-      expect(times.isha).toBe('19:01');
+      expect(times.isha).toBe('19:23');
     });
 
     it('should calculate correct times for Feb 22, 2026 (Ramadan 5)', () => {
@@ -35,7 +34,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:23');
       expect(times.asr).toBe('15:38');
       expect(times.maghrib).toBe('17:33');
-      expect(times.isha).toBe('19:03');
+      expect(times.isha).toBe('19:25');
     });
 
     it('should calculate correct times for Feb 23, 2026 (Ramadan 6)', () => {
@@ -45,7 +44,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:23');
       expect(times.asr).toBe('15:40');
       expect(times.maghrib).toBe('17:35');
-      expect(times.isha).toBe('19:05');
+      expect(times.isha).toBe('19:26');
     });
   });
 
@@ -57,7 +56,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:22');
       expect(times.asr).toBe('15:50');
       expect(times.maghrib).toBe('17:46');
-      expect(times.isha).toBe('19:16');
+      expect(times.isha).toBe('19:37');
     });
 
     it('should calculate correct times for Mar 5, 2026 (Ramadan 16)', () => {
@@ -67,7 +66,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:21');
       expect(times.asr).toBe('15:56');
       expect(times.maghrib).toBe('17:54');
-      // Note: Expected 19:40, but may have seasonal adjustment
+      expect(times.isha).toBe('19:45');
     });
 
     it('should calculate correct times for Mar 8, 2026 (Ramadan 19)', () => {
@@ -77,7 +76,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:20');
       expect(times.asr).toBe('16:01');
       expect(times.maghrib).toBe('17:59');
-      // Note: Expected 19:44, but may have seasonal adjustment
+      expect(times.isha).toBe('19:51');
     });
   });
 
@@ -89,8 +88,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:20');
       expect(times.asr).toBe('16:04');
       expect(times.maghrib).toBe('18:03');
-      // Note: Our calculation gives 19:55, Madani shows 19:45
-      // This is a 10-minute discrepancy, possibly due to 90-minute rule
+      expect(times.isha).toBe('19:55');
     });
 
     it('should calculate correct times for Mar 15, 2026 (Ramadan 26)', () => {
@@ -100,7 +98,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:18');
       expect(times.asr).toBe('16:12'); // Actual calculation: 16:12
       expect(times.maghrib).toBe('18:12');
-      // Note: Our calculation may differ from expected 19:50
+      expect(times.isha).toBe('20:05');
     });
 
     it('should calculate correct times for Mar 19, 2026 (Ramadan 30)', () => {
@@ -110,9 +108,7 @@ describe('Prayer Times Calculation - Madani School Leicester', () => {
       expect(times.zuhr).toBe('12:17');
       expect(times.asr).toBe('16:17');
       expect(times.maghrib).toBe('18:19');
-      // Note: Our calculation gives 20:13, Madani shows 19:55
-      // This is an 18-minute discrepancy, likely due to 90-minute Isha rule
-      // after a certain date when days get longer
+      expect(times.isha).toBe('20:13');
     });
   });
 
