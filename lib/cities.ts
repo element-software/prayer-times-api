@@ -16,6 +16,18 @@ export const UK_CITIES: Record<string, City> = {
   sheffield: { name: "Sheffield", latitude: 53.3811, longitude: -1.4701 },
 };
 
+export const CITY_NAMES = [
+  "London",
+  "Birmingham",
+  "Manchester",
+  "Leicester",
+  "Bradford",
+  "Glasgow",
+  "Leeds",
+  "Liverpool",
+  "Sheffield",
+] as const;
+
 export function getCityByName(name: string): City | undefined {
   return UK_CITIES[name.toLowerCase()];
 }

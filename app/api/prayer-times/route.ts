@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCityByName } from "@/lib/cities";
 import { calculatePrayerTimes } from "@/lib/prayerCalculator";
-import type { APIResponse, APIErrorResponse } from "@/lib/types";
+import type { APIResponse, APIErrorResponse, APIMonthResponse } from "@/lib/types";
 import type { PrayerTimes } from "@/lib/prayerCalculator";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const MONTH_REGEX = /^\d{4}-\d{2}$/;
 const CALCULATION_METHOD = "UK Standard (Fajr 18°, Isha 18°, Hanafi Asr, Dhuhr +5min, Maghrib +3min)";
 const TIMEZONE = "Europe/London";
 
@@ -18,6 +19,21 @@ function isValidDate(dateStr: string): boolean {
   return !isNaN(d.getTime());
 }
 
+function isValidMonth(monthStr: string): boolean {
+  if (!MONTH_REGEX.test(monthStr)) return false;
+  const [y, m] = monthStr.split("-").map(Number);
+  return m >= 1 && m <= 12;
+}
+
+function getDaysInMonth(year: number, month: number): string[] {
+  const days: string[] = [];
+  const last = new Date(year, month, 0).getDate();
+  for (let d = 1; d <= last; d++) {
+    days.push(`${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
+  }
+  return days;
+}
+
 function isValidCoordinate(value: string): boolean {
   const num = Number(value);
   return !isNaN(num) && isFinite(num);
@@ -25,22 +41,14 @@ function isValidCoordinate(value: string): boolean {
 
 export async function GET(
   request: NextRequest
-): Promise<NextResponse<APIResponse | APIErrorResponse>> {
+): Promise<NextResponse<APIResponse | APIMonthResponse | APIErrorResponse>> {
   const { searchParams } = request.nextUrl;
 
   const cityParam = searchParams.get("city");
   const latParam = searchParams.get("lat");
   const lngParam = searchParams.get("lng");
   const dateParam = searchParams.get("date");
-
-  // Resolve date
-  const dateStr = dateParam ?? getTodayInLondon();
-  if (!isValidDate(dateStr)) {
-    return NextResponse.json(
-      { error: "Invalid date format. Use YYYY-MM-DD." },
-      { status: 400 }
-    );
-  }
+  const monthParam = searchParams.get("month");
 
   let latitude: number;
   let longitude: number;
@@ -81,15 +89,51 @@ export async function GET(
     );
   }
 
-  const prayerTimes = calculatePrayerTimes(latitude, longitude, dateStr);
+  const location = {
+    city: cityName,
+    latitude,
+    longitude,
+    timezone: TIMEZONE,
+  };
 
+  // Month request: ?city=X&month=YYYY-MM
+  if (monthParam) {
+    if (!isValidMonth(monthParam)) {
+      return NextResponse.json(
+        { error: "Invalid month format. Use YYYY-MM." },
+        { status: 400 }
+      );
+    }
+    const [year, month] = monthParam.split("-").map(Number);
+    const dates = getDaysInMonth(year, month);
+    const times = dates.map((dateStr) => ({
+      date: dateStr,
+      prayer_times: calculatePrayerTimes(latitude, longitude, dateStr),
+    }));
+    const monthResponse: APIMonthResponse = {
+      location,
+      calculation_method: CALCULATION_METHOD,
+      month: monthParam,
+      times,
+    };
+    return NextResponse.json(monthResponse, {
+      status: 200,
+      headers: { "Cache-Control": "no-store" },
+    });
+  }
+
+  // Single-date request
+  const dateStr = dateParam ?? getTodayInLondon();
+  if (!isValidDate(dateStr)) {
+    return NextResponse.json(
+      { error: "Invalid date format. Use YYYY-MM-DD." },
+      { status: 400 }
+    );
+  }
+
+  const prayerTimes = calculatePrayerTimes(latitude, longitude, dateStr);
   const response: APIResponse = {
-    location: {
-      city: cityName,
-      latitude,
-      longitude,
-      timezone: TIMEZONE,
-    },
+    location,
     date: dateStr,
     calculation_method: CALCULATION_METHOD,
     prayer_times: prayerTimes,

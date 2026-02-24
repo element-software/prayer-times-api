@@ -14,6 +14,18 @@ export interface APIResponse {
   prayer_times: PrayerTimes;
 }
 
+export interface MonthDayTimes {
+  date: string;
+  prayer_times: PrayerTimes;
+}
+
+export interface APIMonthResponse {
+  location: Location;
+  calculation_method: string;
+  month: string; // YYYY-MM
+  times: MonthDayTimes[];
+}
+
 export interface APIErrorResponse {
   error: string;
 }
