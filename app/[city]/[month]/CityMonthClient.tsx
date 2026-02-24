@@ -65,8 +65,8 @@ export function CityMonthClient({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col md:flex-row">
-      <aside className="w-full md:w-64 md:shrink-0 border-b md:border-b-0 md:border-r border-white/10 bg-slate-900/50 flex flex-col p-4">
+    <div className="min-h-screen flex flex-col md:flex-row max-w-screen-2xl mx-auto">
+      <aside className="w-full md:w-64 md:shrink-0 border-b md:border-b-0 md:border-r border-white/10 flex flex-col p-4 fixed h-full">
         <h1 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <span>🕌</span> Prayer Times
         </h1>
@@ -109,7 +109,7 @@ export function CityMonthClient({
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto p-6">
+      <main className="flex-1 overflow-auto p-6 ml-64">
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-white">
             {cityName} — {formatMonthLabel(year, month)}
