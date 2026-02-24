@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const CITIES = [
   "London",
@@ -65,6 +65,10 @@ export default function Home() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    fetchPrayerTimes();
+  }, []);
 
   const prayerLabels: { key: keyof PrayerTimes; label: string; emoji: string }[] =
     [
