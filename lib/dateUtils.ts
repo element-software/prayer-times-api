@@ -28,3 +28,19 @@ export function parseMonthSlug(slug: string): { year: number; month: number } | 
   if (month < 1 || month > 12) return null;
   return { year, month };
 }
+
+export function getPrevMonthSlug(slug: string): string {
+  const parsed = parseMonthSlug(slug);
+  if (!parsed) return slug;
+  const { year, month } = parsed;
+  if (month <= 1) return monthSlug(year - 1, 12);
+  return monthSlug(year, month - 1);
+}
+
+export function getNextMonthSlug(slug: string): string {
+  const parsed = parseMonthSlug(slug);
+  if (!parsed) return slug;
+  const { year, month } = parsed;
+  if (month >= 12) return monthSlug(year + 1, 1);
+  return monthSlug(year, month + 1);
+}
