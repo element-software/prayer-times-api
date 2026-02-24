@@ -65,8 +65,8 @@ export function CityMonthClient({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex">
-      <aside className="w-64 shrink-0 border-r border-white/10 bg-slate-900/50 flex flex-col p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col md:flex-row">
+      <aside className="w-full md:w-64 md:shrink-0 border-b md:border-b-0 md:border-r border-white/10 bg-slate-900/50 flex flex-col p-4">
         <h1 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <span>🕌</span> Prayer Times
         </h1>
