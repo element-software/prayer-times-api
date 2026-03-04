@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CITY_NAMES } from "@/lib/cities";
 import { formatMonthLabel, getPrevMonthSlug, getNextMonthSlug } from "@/lib/dateUtils";
 
@@ -15,11 +18,6 @@ export interface SidebarProps {
   subtitle?: string;
 }
 
-const linkBase =
-  "block rounded-lg px-3 py-2 border border-slate-600 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ";
-const linkClass = linkBase + "bg-slate-800 hover:bg-slate-700";
-const currentClass = linkBase + "bg-slate-700 border-emerald-500/50 text-emerald-100";
-
 export function Sidebar({
   cityName,
   citySlug,
@@ -27,6 +25,7 @@ export function Sidebar({
   title = "Prayer Times",
   subtitle = "Islamic prayer times for UK cities",
 }: SidebarProps) {
+  const router = useRouter();
   const [year, month] = monthSlug.split("-").map(Number);
   const monthLabel = formatMonthLabel(year, month);
   const prevHref = `/${citySlug}/${getPrevMonthSlug(monthSlug)}`;
@@ -39,22 +38,22 @@ export function Sidebar({
       </h1>
       <p className="text-slate-400 text-sm mb-4">{subtitle}</p>
 
-      <label className="text-slate-300 text-sm font-medium mb-1">City</label>
-      <nav className="flex flex-col gap-1 mb-6" aria-label="Select city">
+      <label className="text-slate-300 text-sm font-medium mb-1" htmlFor="city-select">City</label>
+      <select
+        id="city-select"
+        value={citySlug}
+        onChange={(e) => router.push(`/${e.target.value}/${monthSlug}`)}
+        className="mb-6 w-full rounded-lg px-3 py-2 border border-slate-600 bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+      >
         {CITY_NAMES.map((c) => {
           const slug = c.toLowerCase();
-          const isCurrent = slug === citySlug;
           return (
-            <Link
-              key={c}
-              href={`/${slug}/${monthSlug}`}
-              className={isCurrent ? currentClass : linkClass}
-            >
+            <option key={c} value={slug}>
               {c}
-            </Link>
+            </option>
           );
         })}
-      </nav>
+      </select>
 
       <label className="text-slate-300 text-sm font-medium mb-1">Month</label>
       <div className="flex items-center gap-2">
