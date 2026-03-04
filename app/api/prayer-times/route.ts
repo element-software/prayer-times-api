@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCityByName } from "@/lib/cities";
-import { calculatePrayerTimes } from "@/lib/prayerCalculator";
+import { calculatePrayerTimes, VALID_SCHOOLS, type School } from "@/lib/prayerCalculator";
 import type { APIResponse, APIErrorResponse, APIMonthResponse } from "@/lib/types";
 import type { PrayerTimes } from "@/lib/prayerCalculator";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const MONTH_REGEX = /^\d{4}-\d{2}$/;
-const CALCULATION_METHOD = "UK Standard (Fajr 18°, Isha 18°, Hanafi Asr, Dhuhr +5min, Maghrib +3min)";
 const TIMEZONE = "Europe/London";
+
+function getCalculationMethod(school: School): string {
+  const asrLabel = school === "hanafi" ? "Hanafi" : "Shafi'i";
+  return `UK Standard (Fajr 18°, Isha 18°, ${asrLabel} Asr, Dhuhr +5min, Maghrib +3min)`;
+}
 
 function getTodayInLondon(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE });
@@ -49,6 +53,15 @@ export async function GET(
   const lngParam = searchParams.get("lng");
   const dateParam = searchParams.get("date");
   const monthParam = searchParams.get("month");
+  const schoolParam = searchParams.get("school") ?? "hanafi";
+
+  if (!VALID_SCHOOLS.includes(schoolParam as School)) {
+    return NextResponse.json(
+      { error: `Invalid school: "${schoolParam}". Valid values: ${VALID_SCHOOLS.join(", ")}.` },
+      { status: 400 }
+    );
+  }
+  const school = schoolParam as School;
 
   let latitude: number;
   let longitude: number;
@@ -108,11 +121,11 @@ export async function GET(
     const dates = getDaysInMonth(year, month);
     const times = dates.map((dateStr) => ({
       date: dateStr,
-      prayer_times: calculatePrayerTimes(latitude, longitude, dateStr),
+      prayer_times: calculatePrayerTimes(latitude, longitude, dateStr, school),
     }));
     const monthResponse: APIMonthResponse = {
       location,
-      calculation_method: CALCULATION_METHOD,
+      calculation_method: getCalculationMethod(school),
       month: monthParam,
       times,
     };
@@ -131,11 +144,11 @@ export async function GET(
     );
   }
 
-  const prayerTimes = calculatePrayerTimes(latitude, longitude, dateStr);
+  const prayerTimes = calculatePrayerTimes(latitude, longitude, dateStr, school);
   const response: APIResponse = {
     location,
     date: dateStr,
-    calculation_method: CALCULATION_METHOD,
+    calculation_method: getCalculationMethod(school),
     prayer_times: prayerTimes,
   };
 

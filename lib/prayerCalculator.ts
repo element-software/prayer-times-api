@@ -6,6 +6,10 @@ import {
   Madhab,
 } from "adhan";
 
+export type School = "hanafi" | "shafi";
+
+export const VALID_SCHOOLS: School[] = ["hanafi", "shafi"];
+
 export interface PrayerTimes {
   fajr: string;
   sunrise: string;
@@ -29,7 +33,8 @@ function formatTime(date: Date): string {
 export function calculatePrayerTimes(
   latitude: number,
   longitude: number,
-  dateStr: string
+  dateStr: string,
+  school: School = "hanafi"
 ): PrayerTimes {
   const [year, month, day] = dateStr.split("-").map(Number);
   const date = new Date(year, month - 1, day);
@@ -37,9 +42,9 @@ export function calculatePrayerTimes(
   const coordinates = new Coordinates(latitude, longitude);
 
   // UK calculation: Fajr 18°, Isha 18° (no high-latitude adjustments)
-  // Dhuhr +5 min, Maghrib +3 min, Hanafi Asr
+  // Dhuhr +5 min, Maghrib +3 min, Hanafi or Shafi'i Asr
   const params = new CalculationParameters("Other", 18, 18);
-  params.madhab = Madhab.Hanafi;
+  params.madhab = school === "hanafi" ? Madhab.Hanafi : Madhab.Shafi;
   params.methodAdjustments = { 
     fajr: 0, 
     sunrise: 0, 

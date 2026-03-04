@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CITY_NAMES } from "@/lib/cities";
 import { formatMonthLabel, getPrevMonthSlug, getNextMonthSlug } from "@/lib/dateUtils";
+import type { School } from "@/lib/prayerCalculator";
 
 export interface SidebarProps {
   /** Current city display name (e.g. "Leicester") */
@@ -12,6 +13,8 @@ export interface SidebarProps {
   citySlug: string;
   /** Current month in YYYY-MM format */
   monthSlug: string;
+  /** Current school of thought */
+  school?: School;
   /** Optional title override */
   title?: string;
   /** Optional subtitle */
@@ -22,14 +25,16 @@ export function Sidebar({
   cityName,
   citySlug,
   monthSlug,
+  school,
   title = "Prayer Times",
   subtitle = "Islamic prayer times for UK cities",
 }: SidebarProps) {
   const router = useRouter();
   const [year, month] = monthSlug.split("-").map(Number);
   const monthLabel = formatMonthLabel(year, month);
-  const prevHref = `/${citySlug}/${getPrevMonthSlug(monthSlug)}`;
-  const nextHref = `/${citySlug}/${getNextMonthSlug(monthSlug)}`;
+  const schoolSuffix = school && school !== "hanafi" ? `?school=${school}` : "";
+  const prevHref = `/${citySlug}/${getPrevMonthSlug(monthSlug)}${schoolSuffix}`;
+  const nextHref = `/${citySlug}/${getNextMonthSlug(monthSlug)}${schoolSuffix}`;
 
   return (
     <aside className="w-full md:w-64 md:shrink-0 border-b md:border-b-0 md:border-r border-white/10 flex flex-col p-4 md:fixed h-full">
@@ -42,7 +47,7 @@ export function Sidebar({
       <select
         id="city-select"
         value={citySlug}
-        onChange={(e) => router.push(`/${e.target.value}/${monthSlug}`)}
+        onChange={(e) => router.push(`/${e.target.value}/${monthSlug}${schoolSuffix}`)}
         className="mb-6 w-full rounded-lg px-3 py-2 border border-slate-600 bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
       >
         {CITY_NAMES.map((c) => {
