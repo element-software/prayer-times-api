@@ -10,9 +10,10 @@ import { calculatePrayerTimes } from '../prayerCalculator';
  * 
  * Times use UK standard: Fajr/Isha 18°, Hanafi Asr, Dhuhr +5min, Maghrib +3min,
  * matching Madani Schools Federation Ramadan timetable (e.g. 24 Feb 2026).
+ * All reference times are for the Hanafi school of thought.
  */
 
-describe('Prayer Times Calculation - Madani School Leicester', () => {
+describe('Prayer Times Calculation (Hanafi) - Madani School Leicester', () => {
   const LEICESTER_LAT = 52.6369;
   const LEICESTER_LNG = -1.1398;
 

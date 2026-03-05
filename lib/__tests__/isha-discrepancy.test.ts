@@ -5,9 +5,10 @@ import { calculatePrayerTimes } from '../prayerCalculator';
  * Baseline: Madani Schools Federation Ramadan timetable.
  * We use 18° Fajr/Isha (no cap) so times match their published schedule.
  * Reference row: Ramadan Day 7 / Date 24 / Tue (24 Feb 2026).
+ * All reference times are for the Hanafi school of thought.
  */
 
-describe('Madani baseline (24 Feb 2026)', () => {
+describe('Madani baseline - Hanafi (24 Feb 2026)', () => {
   const LEICESTER_LAT = 52.6369;
   const LEICESTER_LNG = -1.1398;
 

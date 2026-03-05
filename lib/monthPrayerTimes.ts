@@ -1,11 +1,14 @@
 import { getCityByName } from "@/lib/cities";
-import { calculatePrayerTimes } from "@/lib/prayerCalculator";
+import { calculatePrayerTimes, type School } from "@/lib/prayerCalculator";
 import type { APIMonthResponse } from "@/lib/types";
 
 const MONTH_REGEX = /^\d{4}-\d{2}$/;
-const CALCULATION_METHOD =
-  "UK Standard (Fajr 18°, Isha 18°, Hanafi Asr, Dhuhr +5min, Maghrib +3min)";
 const TIMEZONE = "Europe/London";
+
+function getCalculationMethod(school: School): string {
+  const asrLabel = school === "hanafi" ? "Hanafi" : "Shafi'i";
+  return `UK Standard (Fajr 18°, Isha 18°, ${asrLabel} Asr, Dhuhr +5min, Maghrib +3min)`;
+}
 
 function getDaysInMonth(year: number, month: number): string[] {
   const days: string[] = [];
@@ -27,11 +30,13 @@ export function isValidMonth(monthStr: string): boolean {
 /**
  * Returns prayer times for every day in the given month for the given city.
  * cityNameOrSlug: city display name or URL slug (e.g. "Leicester" or "leicester").
+ * school: madhab/school of thought ("hanafi" by default).
  * Returns null if city or month is invalid.
  */
 export function getMonthPrayerTimes(
   cityNameOrSlug: string,
-  monthStr: string
+  monthStr: string,
+  school: School = "hanafi"
 ): APIMonthResponse | null {
   const city = getCityByName(cityNameOrSlug);
   if (!city) return null;
@@ -41,7 +46,7 @@ export function getMonthPrayerTimes(
   const dates = getDaysInMonth(year, month);
   const times = dates.map((date) => ({
     date,
-    prayer_times: calculatePrayerTimes(city.latitude, city.longitude, date),
+    prayer_times: calculatePrayerTimes(city.latitude, city.longitude, date, school),
   }));
 
   return {
@@ -51,7 +56,7 @@ export function getMonthPrayerTimes(
       longitude: city.longitude,
       timezone: TIMEZONE,
     },
-    calculation_method: CALCULATION_METHOD,
+    calculation_method: getCalculationMethod(school),
     month: monthStr,
     times,
   };
