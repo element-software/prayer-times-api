@@ -1,5 +1,3 @@
-"use client";
-
 import { formatDayOfWeek, formatDayNum } from "@/lib/dateUtils";
 import type { MonthDayTimes } from "@/lib/types";
 
@@ -30,25 +28,29 @@ export function PrayerTimesTable({
   footnote,
 }: PrayerTimesTableProps) {
   return (
-    <div className="space-y-4">
+    <section className="space-y-2">
       {title && (
-        <h2 className="text-2xl font-bold text-white">{title}</h2>
+        <h2 className="text-[clamp(1.5rem,3vw,2.2rem)] font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+          {title}
+        </h2>
       )}
-      {footnote && (
-        <p className="text-slate-500 text-sm -mt-2">{footnote}</p>
-      )}
+      {footnote && <p className="text-sm text-slate-600 dark:text-slate-300">{footnote}</p>}
 
-      <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+      <div className="mt-5 overflow-hidden rounded-2xl border border-slate-300 bg-white/95 shadow-sm dark:border-slate-700 dark:bg-slate-900/90">
+        <div className="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <table className="w-full min-w-[720px] border-collapse">
             <thead>
-              <tr className="border-b border-white/10 bg-white/5">
-                <th className="px-4 py-3 text-slate-300 font-semibold">Day</th>
-                <th className="px-4 py-3 text-slate-300 font-semibold">Date</th>
+              <tr className="bg-slate-100/80 dark:bg-slate-800/70">
+                <th className="border-b border-slate-300 px-3 py-2.5 text-left text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-300">
+                  Day
+                </th>
+                <th className="border-b border-slate-300 px-3 py-2.5 text-left text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-300">
+                  Date
+                </th>
                 {COLUMNS.map(({ label }) => (
                   <th
                     key={label}
-                    className="px-4 py-3 text-slate-300 font-semibold"
+                    className="border-b border-slate-300 px-3 py-2.5 text-left text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-300"
                   >
                     {label}
                   </th>
@@ -59,22 +61,32 @@ export function PrayerTimesTable({
               {times.map(({ date: dateStr, prayer_times }) => (
                 <tr
                   key={dateStr}
-                  className={`border-b border-white/5 transition-colors ${
+                  className={
                     dateStr === todayStr
-                      ? "bg-emerald-500/20 border-l-4 border-l-emerald-500"
-                      : "hover:bg-white/5"
-                  }`}
+                      ? "bg-emerald-100 ring-1 ring-inset ring-emerald-400/60 dark:bg-emerald-900/50 dark:ring-emerald-400/50"
+                      : "hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                  }
                 >
-                  <td className="px-4 py-2 text-slate-400">
+                  <td className="border-b border-slate-200 px-3 py-2.5 text-base font-medium text-slate-700 dark:border-slate-800 dark:text-slate-300">
                     {formatDayOfWeek(dateStr)}
                   </td>
-                  <td className="px-4 py-2 text-white font-medium">
+                  <td
+                    className={`border-b border-slate-200 px-3 py-2.5 text-base font-semibold dark:border-slate-800 ${
+                      dateStr === todayStr
+                        ? "text-emerald-900 dark:text-emerald-200"
+                        : "text-slate-900 dark:text-slate-100"
+                    }`}
+                  >
                     {formatDayNum(dateStr)}
                   </td>
                   {COLUMNS.map(({ key }) => (
                     <td
                       key={key}
-                      className="px-4 py-2 text-emerald-400 font-mono"
+                      className={`border-b border-slate-200 px-3 py-2.5 font-mono text-base font-semibold dark:border-slate-800 ${
+                        dateStr === todayStr
+                          ? "text-emerald-800 dark:text-emerald-200"
+                          : "text-teal-700 dark:text-teal-300"
+                      }`}
                     >
                       {prayer_times[key]}
                     </td>
@@ -85,6 +97,6 @@ export function PrayerTimesTable({
           </table>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

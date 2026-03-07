@@ -37,7 +37,7 @@ export function CityMonthClient({
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row max-w-screen-2xl mx-auto">
+    <div className="mx-auto grid w-[min(1120px,calc(100%-2rem))] grid-cols-1 gap-4 max-sm:w-[min(1120px,calc(100%-1rem))] lg:grid-cols-[290px_minmax(0,1fr)] lg:items-start">
       <Sidebar
         cityName={cityName}
         citySlug={citySlug}
@@ -45,7 +45,7 @@ export function CityMonthClient({
         school={school}
       />
 
-      <main className="flex-1 overflow-auto p-6 md:ml-64">
+      <main className="space-y-4">
         <PrayerTimesTable
           times={data.times}
           todayStr={todayStr}
@@ -53,18 +53,18 @@ export function CityMonthClient({
           footnote={data.calculation_method}
         />
 
-        <div className="mt-4 flex items-center gap-3">
+        <section className="rounded-2xl border border-slate-300 bg-white/95 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/90">
           <label
             htmlFor="school-select"
-            className="text-slate-300 text-sm font-medium"
+            className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"
           >
-            School of Thought
+            School of thought
           </label>
           <select
             id="school-select"
             value={school}
             onChange={handleSchoolChange}
-            className="rounded-lg px-3 py-2 border border-slate-600 bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none ring-teal-500 transition focus:ring-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
           >
             {(Object.entries(SCHOOL_LABELS) as [School, string][]).map(
               ([value, label]) => (
@@ -74,7 +74,7 @@ export function CityMonthClient({
               )
             )}
           </select>
-        </div>
+        </section>
       </main>
     </div>
   );

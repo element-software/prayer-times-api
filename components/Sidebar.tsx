@@ -26,8 +26,8 @@ export function Sidebar({
   citySlug,
   monthSlug,
   school,
-  title = "Prayer Times",
-  subtitle = "Islamic prayer times for UK cities",
+  title = "Plan your month",
+  subtitle = "Switch city, month, and school quickly",
 }: SidebarProps) {
   const router = useRouter();
   const [year, month] = monthSlug.split("-").map(Number);
@@ -37,48 +37,72 @@ export function Sidebar({
   const nextHref = `/${citySlug}/${getNextMonthSlug(monthSlug)}${schoolSuffix}`;
 
   return (
-    <aside className="w-full md:w-64 md:shrink-0 border-b md:border-b-0 md:border-r border-white/10 flex flex-col p-4 md:fixed h-full">
-      <h1 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-        <span>🕌</span> {title}
-      </h1>
-      <p className="text-slate-400 text-sm mb-4">{subtitle}</p>
+    <aside className="rounded-2xl border border-slate-300 bg-white/95 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/90 lg:sticky lg:top-20">
+      <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">{title}</h1>
+      <p className="mt-1 mb-4 text-sm text-slate-600 dark:text-slate-300">{subtitle}</p>
 
-      <label className="text-slate-300 text-sm font-medium mb-1" htmlFor="city-select">City</label>
-      <select
-        id="city-select"
-        value={citySlug}
-        onChange={(e) => router.push(`/${e.target.value}/${monthSlug}${schoolSuffix}`)}
-        className="mb-6 w-full rounded-lg px-3 py-2 border border-slate-600 bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-      >
-        {CITY_NAMES.map((c) => {
-          const slug = c.toLowerCase();
-          return (
-            <option key={c} value={slug}>
-              {c}
-            </option>
-          );
-        })}
-      </select>
+      <div className="grid gap-3.5">
+        <div>
+          <label
+            className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"
+            htmlFor="city-select"
+          >
+            City
+          </label>
+          <select
+            id="city-select"
+            value={citySlug}
+            onChange={(e) => router.push(`/${e.target.value}/${monthSlug}${schoolSuffix}`)}
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none ring-teal-500 transition focus:ring-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          >
+            {CITY_NAMES.map((c) => {
+              const slug = c.toLowerCase();
+              return (
+                <option key={c} value={slug}>
+                  {c}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-      <label className="text-slate-300 text-sm font-medium mb-1">Month</label>
-      <div className="flex items-center gap-2">
-        <Link
-          href={prevHref}
-          className="p-2 rounded-lg bg-slate-800 border border-slate-600 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shrink-0"
-          aria-label="Previous month"
-        >
-          ←
-        </Link>
-        <span className="flex-1 text-center text-white font-medium min-w-[8rem]">
-          {monthLabel}
-        </span>
-        <Link
-          href={nextHref}
-          className="p-2 rounded-lg bg-slate-800 border border-slate-600 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shrink-0"
-          aria-label="Next month"
-        >
-          →
-        </Link>
+        <div>
+          <label
+            className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"
+            htmlFor="month-label"
+          >
+            Month
+          </label>
+          <div
+            className="grid grid-cols-[auto_1fr_auto] items-center gap-2"
+            id="month-label"
+            aria-live="polite"
+          >
+            <Link
+              href={prevHref}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-300 bg-white text-lg font-bold text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+              aria-label="Previous month"
+            >
+              ←
+            </Link>
+            <span className="text-center font-semibold text-slate-900 dark:text-slate-100">
+              {monthLabel}
+            </span>
+            <Link
+              href={nextHref}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-300 bg-white text-lg font-bold text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+              aria-label="Next month"
+            >
+              →
+            </Link>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            Viewing {cityName} ({school === "shafi" ? "Shafi'i" : "Hanafi"})
+          </p>
+        </div>
       </div>
     </aside>
   );
