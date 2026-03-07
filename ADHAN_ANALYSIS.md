@@ -58,27 +58,96 @@ The library computes prayer times in a well-defined pipeline:
 
 ```ts
 // lib/prayerCalculator.ts
-const params = new CalculationParameters("Other", 18, 18); // custom UK Standard
+const params = CalculationMethod.MoonsightingCommittee(); // UK standard method
 params.madhab = school === "hanafi" ? Madhab.Hanafi : Madhab.Shafi;
-params.methodAdjustments = { dhuhr: 5, maghrib: 3, ... };
 const prayerTimes = new AdhanPrayerTimes(coordinates, date, params);
 ```
 
-- `Coordinates`, `CalculationParameters`, `PrayerTimes`, `Madhab` — the core API.
-- Custom 18°/18° method with +5 min Dhuhr and +3 min Maghrib adjustments.
+- `Coordinates`, `CalculationMethod`, `PrayerTimes`, `Madhab` — the core API.
+- `MoonsightingCommittee` preset: 18°/18° angles, Dhuhr +5 min, Maghrib +3 min, **plus seasonal twilight adjustment**.
 - Hanafi and Shafi Asr variants.
 
-## Adhan Features Not Yet Used
+## Unused Features — What They Do and Whether They Improve Accuracy
 
-| Feature | Relevance |
+### 1. `HighLatitudeRule`
+
+**What it does:** Provides a safety net for Fajr and Isha at high latitudes where the sun may not reach the required depression angle. Three strategies exist:
+
+| Rule | Behaviour |
 |---|---|
-| `CalculationMethod.MoonsightingCommittee()` | Built-in UK/North America preset with seasonal adjustments |
-| `HighLatitudeRule` | Important for accurate UK times in summer (Scotland especially) |
-| `Shafaq.Ahmer / Abyad` | More precise Isha at high latitudes via MoonsightingCommittee |
-| `PolarCircleResolution` | Required for locations near the Arctic (e.g., Scotland in June) |
-| `SunnahTimes` | Qiyam — middle of the night and last third |
-| `Qibla` | Direction to Makkah |
-| `currentPrayer()` / `nextPrayer()` | Countdown utilities |
+| `MiddleOfTheNight` | Fajr no earlier than, Isha no later than, the midpoint between sunset and the next sunrise. |
+| `SeventhOfTheNight` | Bounds Fajr/Isha to the first/last seventh of the night. Recommended above 48°N. |
+| `TwilightAngle` | Derives the bound from the depression angle (angle ÷ 60 × night duration). |
+
+**Would it improve accuracy?** For the UK cities currently supported (51–56°N), the `MoonsightingCommittee` seasonal adjustment already handles the high-latitude problem via its own algorithm (`seasonAdjustedMorningTwilight` / `seasonAdjustedEveningTwilight`). Adding `HighLatitudeRule` on top of `MoonsightingCommittee` would be redundant — adhan's `PrayerTimes` class only invokes the seasonal adjustment path when the method is `MoonsightingCommittee`, regardless of `highLatitudeRule`. It would become relevant if the method were ever changed away from `MoonsightingCommittee`.
+
+### 2. `Shafaq.Ahmer` / `Shafaq.Abyad`
+
+**What it does:** Controls which type of evening twilight the `MoonsightingCommittee` method uses to compute Isha:
+
+| Value | Meaning | Isha timing |
+|---|---|---|
+| `Shafaq.General` (default) | Combination of Ahmer and Abyad — more forgiving at high latitudes. | Most balanced; default for UK/North America. |
+| `Shafaq.Ahmer` | Red twilight (reddish glow on the horizon). Used by Shafi, Maliki, and Hanbali madhabs. | Produces an **earlier** Isha. |
+| `Shafaq.Abyad` | White twilight (white glow on the horizon). Used by the Hanafi madhab. | Produces a **later** Isha. |
+
+**Would it improve accuracy?** For Hanafi practitioners, `Shafaq.Abyad` is technically the correct opinion — Hanafi fiqh holds that Isha begins when the white twilight disappears, not just the red. Setting `params.shafaq = Shafaq.Abyad` when the school is Hanafi would produce a slightly later Isha that is more aligned with the stricter Hanafi position. This is a small but theologically meaningful improvement and could be exposed as an optional parameter in future.
+
+### 3. `PolarCircleResolution`
+
+**What it does:** Resolves prayer times for locations inside the Arctic or Antarctic circles, where sunrise or sunset may not occur at all for days or weeks. Two fallback strategies:
+
+| Value | Behaviour |
+|---|---|
+| `AqrabBalad` | Borrows prayer times from the nearest location where sunrise/sunset can be computed. |
+| `AqrabYaum` | Borrows prayer times from the closest date (forward or backward) on which sunrise/sunset occurs. |
+
+**Would it improve accuracy?** Not relevant for the current UK city set. However, if the API is extended to support coordinates anywhere in the world, enabling `AqrabYaum` (the more commonly accepted opinion) would prevent `undefined` times from being returned for users querying extreme northern locations. It is a correctness improvement, not an accuracy one.
+
+### 4. `SunnahTimes`
+
+**What it does:** Calculates the two Qiyam (night prayer) times given an existing `PrayerTimes` object:
+
+- `middleOfTheNight` — Midpoint between Maghrib and the next day's Fajr.
+- `lastThirdOfTheNight` — Start of the last third of the night (the recommended time for Tahajjud).
+
+**Would it improve accuracy?** Not applicable — Sunnah times are not prayer obligations and are currently outside the scope of this API. They would be a pure feature addition.
+
+### 5. `Qibla`
+
+**What it does:** Computes the great-circle bearing (in degrees from North) from any coordinates to the Kaaba in Makkah (21.4225°N, 39.8262°E), using spherical trigonometry.
+
+**Would it improve accuracy?** Not applicable to prayer time calculations. It is a separate feature that would complement the API well for users who also need a compass direction.
+
+### 6. `currentPrayer()` / `nextPrayer()`
+
+**What they do:** Instance methods on `PrayerTimes` that return the current or next prayer name (as a `Prayer` enum) based on the current wall-clock time.
+
+**Would they improve accuracy?** No — they are convenience utilities. They would be useful for a countdown-to-next-prayer feature in a client application consuming this API.
+
+---
+
+## Why MoonsightingCommittee Was Adopted
+
+The previous implementation used `CalculationParameters("Other", 18, 18)` with manually set Dhuhr/Maghrib adjustments. While the base angles (18°/18°) and the minute offsets (Dhuhr +5, Maghrib +3) were identical to `MoonsightingCommittee`, the critical difference was the **absence of the seasonal twilight adjustment**.
+
+During British summer and the approach to it, 18° astronomical twilight can persist all night at UK latitudes, meaning the raw angle calculation produces no valid Fajr or Isha time (or returns an impractically early/late one). The `MoonsightingCommittee` seasonal algorithm — based on Khalid Shaukat's work — smoothly interpolates a practical bound across the year using the observer's latitude and the day-of-year offset from the nearest solstice. This is precisely the algorithm endorsed by the UK Islamic Sharia Council and widely used by British mosques.
+
+**Before (raw 18° — no seasonal adjustment):**
+
+| Date | Fajr | Isha |
+|---|---|---|
+| Feb 21, 2026 | 05:15 | 19:23 |
+| Mar 19, 2026 | 04:13 | 20:13 |
+
+**After (MoonsightingCommittee — seasonal adjustment active):**
+
+| Date | Fajr | Isha |
+|---|---|---|
+| Feb 21, 2026 | 05:32 | 18:53 |
+| Mar 19, 2026 | 04:36 | 19:34 |
+
+The seasonal adjustment makes Fajr **later** in winter (preventing an unreasonably early pre-dawn time) and Isha **earlier** in spring/summer (preventing an unreasonably late night prayer). Dhuhr, Asr, Sunrise, and Maghrib are unaffected.
 
 ---
 
@@ -103,9 +172,9 @@ const prayerTimes = new AdhanPrayerTimes(coordinates, date, params);
 Create an npm package (e.g., `@element-software/prayer-times`) that:
 
 - Declares `adhan` as a **peer dependency** (so consumers share one copy) or bundles only the modules it uses.
-- Exports a clean, opinionated TypeScript API with UK defaults (18°/18°, Hanafi Asr, Dhuhr +5 min, Maghrib +3 min).
+- Exports a clean, opinionated TypeScript API defaulting to `MoonsightingCommittee` with Hanafi Asr (the UK standard).
 - Includes the UK city database and timezone handling.
 - Exposes daily and monthly timetable helpers.
-- Re-exports the `HighLatitudeRule`, `Madhab`, and `Shafaq` enums for advanced callers.
+- Re-exports the `HighLatitudeRule`, `Madhab`, and `Shafaq` enums for advanced callers, with `Shafaq.Abyad` as the optional Hanafi-correct Isha mode.
 
 This gives full control over the public API and versioning, while keeping the precision and trust of adhan's astronomical core.

@@ -66,7 +66,7 @@ GET /api/prayer-times?lat=52.6369&lng=-1.1398&date=2026-02-21
     "timezone": "Europe/London"
   },
   "date": "2026-02-21",
-  "calculation_method": "UK Standard (Fajr 18°, Isha 18°)",
+  "calculation_method": "Moonsighting Committee (Fajr 18°, Isha 18° seasonal, Hanafi Asr, Dhuhr +5min, Maghrib +3min)",
   "prayer_times": {
     "fajr": "05:12",
     "zuhr": "12:21",
@@ -89,13 +89,15 @@ GET /api/prayer-times?lat=52.6369&lng=-1.1398&date=2026-02-21
 
 ## Calculation Method
 
-- **Fajr**: 18° below horizon (with UK seasonal adjustment)
+Uses the **UK Moonsighting Committee** method (Khalid Shaukat):
+
+- **Fajr**: 18° below horizon — subject to seasonal twilight adjustment (prevents impractically early times in winter)
 - **Zuhr**: Solar noon + 5 min adjustment
-- **Asr**: Hanafi method (shadow = 2× object height)
+- **Asr**: Hanafi method (shadow = 2× object height) or Shafi'i (shadow = 1×)
 - **Maghrib**: Sunset + 3 min adjustment
-- **Isha**: 18° below horizon (with UK seasonal adjustment)
+- **Isha**: 18° below horizon — subject to seasonal twilight adjustment (prevents impractically late times in spring/summer)
 - **Timezone**: Europe/London (BST/GMT auto-handled)
-- **High latitude**: UK Moonsighting Committee seasonal twilight algorithm
+- **Seasonal algorithm**: latitude × day-of-year correction caps Fajr/Isha at practical times when 18° twilight is absent or extreme
 
 ---
 
