@@ -2,7 +2,6 @@ import {
   Coordinates,
   CalculationMethod,
   PrayerTimes as AdhanPrayerTimes,
-  CalculationParameters,
   Madhab,
 } from "adhan";
 
@@ -41,18 +40,11 @@ export function calculatePrayerTimes(
 
   const coordinates = new Coordinates(latitude, longitude);
 
-  // UK calculation: Fajr 18°, Isha 18° (no high-latitude adjustments)
-  // Dhuhr +5 min, Maghrib +3 min, Hanafi or Shafi'i Asr
-  const params = new CalculationParameters("Other", 18, 18);
+  // UK Moonsighting Committee method: Fajr/Isha 18°, Dhuhr +5 min, Maghrib +3 min.
+  // Applies a seasonal twilight adjustment so Fajr/Isha remain at practical times
+  // during summer months when 18° twilight may never fully occur in the UK.
+  const params = CalculationMethod.MoonsightingCommittee();
   params.madhab = school === "hanafi" ? Madhab.Hanafi : Madhab.Shafi;
-  params.methodAdjustments = { 
-    fajr: 0, 
-    sunrise: 0, 
-    dhuhr: 5, 
-    asr: 0, 
-    maghrib: 3, 
-    isha: 0 
-  };
 
   const prayerTimes = new AdhanPrayerTimes(coordinates, date, params);
 

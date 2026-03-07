@@ -7,7 +7,7 @@ const TIMEZONE = "Europe/London";
 
 function getCalculationMethod(school: School): string {
   const asrLabel = school === "hanafi" ? "Hanafi" : "Shafi'i";
-  return `UK Standard (Fajr 18°, Isha 18°, ${asrLabel} Asr, Dhuhr +5min, Maghrib +3min)`;
+  return `Moonsighting Committee (Fajr 18°, Isha 18° seasonal, ${asrLabel} Asr, Dhuhr +5min, Maghrib +3min)`;
 }
 
 function getDaysInMonth(year: number, month: number): string[] {
